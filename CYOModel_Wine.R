@@ -18,7 +18,7 @@ if(!require(rattle)) install.packages("rattle")
 
 # The following command will list all the datasets in a package, we are interested
 # in the wine dataset. 
-# data(package="rattle") #commented, but you can uncomment and run the command if you are interested
+data(package="rattle") 
 
 #Loading the wine dataset
 data("wine")
@@ -80,7 +80,7 @@ test_output <- wine_test_set %>% select(Type) %>% .$Type
 ###############################Building the Model #################################
 # We will use the knn model, to determine the no. of neighbors(k) we will use cross validation
 # to determine the ideal k value
-# lets use kfold cross validation. We will take 10 resampling and we will take 90% of the data for 
+# lets use kfold cross validation. We will take 5 resampling and we will take 90% of the data for 
 # sample
 cv_no <- 5
 control <- trainControl(method="cv", number=cv_no, p=0.9)
@@ -88,11 +88,10 @@ control <- trainControl(method="cv", number=cv_no, p=0.9)
 train_knn <- train(wine_train_set,train_output,method="knn", tuneGrid = data.frame(k=c(1,3,4,5,7)),trControl = control )
 ggplot(train_knn)
 
-# From the above ggplot,we can pick knn=3,7 it seems to have an 
-# accuracy of between 0.70 and 0.71
+# From the above ggplot,we can pick knn=3 it seems to have an acceptable accuracy
 
-# Now lets create a model after we find the ideal K 
-knn_fit <- knn3(wine_train_set,train_output,k=7)
+# Now lets create a model with the ideal K 
+knn_fit <- knn3(wine_train_set,train_output,k=3)
 
 # now lets run the knn_fit model against the test data to get the predicted Y
 y_hat_knn <- predict(knn_fit,wine_test_set,type="class")
