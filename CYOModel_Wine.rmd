@@ -86,19 +86,19 @@ test_output <- wine_test_set %>% select(Type) %>% .$Type
 
 ## Method and Analysis
 
-To build the K Nearest Neighbor model, I have decided to train the model using some tuning parameters. I have decided to use cross validation with 5 resampling with 90% of the data. I then decided to train the model with k value of 1,3,4,5 and 7. This is to determine the ideal k value that has relatively good accuracy.
-The plan is then to use the k value to create the final model. AS you can see from the plot knn=3 seems to produce an acceptable accuracy to build our model
+To build the K Nearest Neighbor model, I have decided to train the model using some tuning parameters. I have decided to use cross validation with 10 resampling with 90% of the data. I then decided to train the model with k value of 1,3,4,5 and 7. This is to determine the ideal k value that has relatively good accuracy.
+The plan is then to use the k value to create the final model. AS you can see from the plot knn= 5 and 7 seems to produce an acceptable accuracy to build our model
 
 ```{r train_knn, echo=FALSE}
-cv_no <- 5
+cv_no <- 10
 control <- trainControl(method="cv", number=cv_no, p=0.9)
 
-train_knn <- train(wine_train_set,train_output,method="knn", tuneGrid = data.frame(k=c(1,3,4,5,7)),trControl = control )
+train_knn <- train(wine_train_set,train_output,method="knn", tuneGrid = data.frame(k=c(1,2,3,4,5,7)),trControl = control )
 ggplot(train_knn)
 ```
 
 ## Method and Analysis - Contd
-From the graph above we will use k value 3 to run our final model
+From the graph above we will use k value that would give the expected accuracy as per our goal (above 60%)
 
 ```{r echo=TRUE}
 # Now lets create a model with the ideal K 
@@ -108,3 +108,16 @@ knn_fit <- knn3(wine_train_set,train_output,k=3)
 y_hat_knn <- predict(knn_fit,wine_test_set,type="class")
 ```
 
+## Results
+As you can see from the below output that achieved an accuracy of above 60%
+```{r cm}
+# lets see how accurate it is by executing the confusion matrix: Predicted output versus actual output
+# in the test data
+cm <- confusionMatrix(y_hat_knn,test_output) 
+
+# Lets determine the accuracy
+cm$overall["Accuracy"]
+```
+
+## Conclusion
+Through the K nearest neighbor model we were able to predict the output classification i.e the wine type 1, 2 or 3 with over 60% accuracy. Which was our goal to begin with. This exercise also proves the usefulness of the K nearest neighbor when the target output is more than 2 classifiers (in this case its 3.) Although this dataset is very little in size, this simple model did a pretty decent job in classifying the output (3 values) from multiple features (13 inputs.)

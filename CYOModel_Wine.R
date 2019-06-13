@@ -66,7 +66,7 @@ test_output <- wine_test_set %>% select(Type) %>% .$Type
 
 #################################################################################
 ################################### GOAL ########################################
-#################### About 68% accuracy for Classification rate##################
+#################### About 60% accuracy for Classification rate##################
 #################################################################################
 
 # Use the 13 features (Chemical analysis), we would like to determine the type of
@@ -80,17 +80,17 @@ test_output <- wine_test_set %>% select(Type) %>% .$Type
 ###############################Building the Model #################################
 # We will use the knn model, to determine the no. of neighbors(k) we will use cross validation
 # to determine the ideal k value
-# lets use kfold cross validation. We will take 5 resampling and we will take 90% of the data for 
+# lets use kfold cross validation. We will take 10 resampling and we will take 90% of the data for 
 # sample
-cv_no <- 5
+cv_no <- 10
 control <- trainControl(method="cv", number=cv_no, p=0.9)
 
-train_knn <- train(wine_train_set,train_output,method="knn", tuneGrid = data.frame(k=c(1,3,4,5,7)),trControl = control )
+train_knn <- train(wine_train_set,train_output,method="knn", tuneGrid = data.frame(k=c(1,2,3,4,5,7)),trControl = control )
 ggplot(train_knn)
 
 # From the above ggplot,we can pick knn=3 it seems to have an acceptable accuracy
 
-# Now lets create a model with the ideal K 
+# Now lets create a model after we find the ideal K 
 knn_fit <- knn3(wine_train_set,train_output,k=3)
 
 # now lets run the knn_fit model against the test data to get the predicted Y
@@ -101,4 +101,4 @@ y_hat_knn <- predict(knn_fit,wine_test_set,type="class")
 cm <- confusionMatrix(y_hat_knn,test_output) 
 
 # Lets determine the accuracy
-cm$overall["Accuracy"] #  Accuracy 0.6842105 
+cm$overall["Accuracy"] #  Accuracy 0.6315789 
